@@ -1,0 +1,148 @@
+---
+title: "Midterm Project"
+author: "Anna Bowes"
+date: "2024-03-27"
+output: word_document
+---
+Before submit, add citation into r markdown portion
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 10, warning = FALSE, results = FALSE, message = FALSE}
+
+# The parameters: echo tells R to not include in my Rmarkdown, the figure alterations are so that we can see my graphs better later on
+# the parameters (continued): results = FALSE tells it to not print the messages form r console
+
+#libraries
+library(devtools)
+library(nbastatR)
+library(ggplot2)
+
+#the devtools was just for installing the package, only need to do one time
+#devtools::install_github("abresler/nbastatR")
+
+#I was getting an error message so I have to do the following code to make more storage room for the package
+Sys.setenv("VROOM_CONNECTION_SIZE"=131072*2)
+
+# now I can look at the shots data
+# This is all the data from 2011 to 2020
+bucks_2011_shots <- teams_shots(teams = "Milwaukee Bucks", seasons = 2011)
+bucks_2012_shots <- teams_shots(teams = "Milwaukee Bucks", seasons = 2012)
+bucks_2013_shots <- teams_shots(teams = "Milwaukee Bucks", seasons = 2013)
+bucks_2014_shots <- teams_shots(teams = "Milwaukee Bucks", seasons = 2014)
+bucks_2015_shots <- teams_shots(teams = "Milwaukee Bucks", seasons = 2015)
+bucks_2016_shots <- teams_shots(teams = "Milwaukee Bucks", seasons = 2016)
+bucks_2017_shots <- teams_shots(teams = "Milwaukee Bucks", seasons = 2017)
+bucks_2018_shots <- teams_shots(teams = "Milwaukee Bucks", seasons = 2018)
+bucks_2019_shots <- teams_shots(teams = "Milwaukee Bucks", seasons = 2019)
+bucks_2020_shots <- teams_shots(teams = "Milwaukee Bucks", seasons = 2020)
+
+# now I am combining the data for 2016-2020 into one data set
+bucks_total_shots <- rbind(bucks_2011_shots, bucks_2012_shots, bucks_2013_shots, bucks_2014_shots, bucks_2015_shots, bucks_2016_shots,bucks_2017_shots,bucks_2018_shots,bucks_2019_shots,bucks_2020_shots)
+
+
+
+# github code citation: https://gist.github.com/edkupfer/6354964
+# This code is not mine, it was obtained at the link above in order to effectively add court lines to my plots. 
+court_code <- ggplot(data=data.frame(x=1,y=1),aes(x,y))+
+   ###outside box:
+geom_path(data=data.frame(x=c(-25,-25,25,25,-25),y=c(-47,47,47,-47,-47)))+
+   ###halfcourt line:
+geom_path(data=data.frame(x=c(-25,25),y=c(0,0)))+
+   ###halfcourt semicircle:
+geom_path(data=data.frame(x=c(-6000:(-1)/1000,1:6000/1000),y=c(sqrt(6^2-c(-6000:(-1)/1000,1:6000/1000)^2))),aes(x=x,y=y))+
+geom_path(data=data.frame(x=c(-6000:(-1)/1000,1:6000/1000),y=-c(sqrt(6^2-c(-6000:(-1)/1000,1:6000/1000)^2))),aes(x=x,y=y))+
+   ###solid FT semicircle above FT line:
+geom_path(data=data.frame(x=c(-6000:(-1)/1000,1:6000/1000),y=c(28-sqrt(6^2-c(-6000:(-1)/1000,1:6000/1000)^2))),aes(x=x,y=y))+
+geom_path(data=data.frame(x=c(-6000:(-1)/1000,1:6000/1000),y=-c(28-sqrt(6^2-c(-6000:(-1)/1000,1:6000/1000)^2))),aes(x=x,y=y))+
+   ###dashed FT semicircle below FT line:
+geom_path(data=data.frame(x=c(-6000:(-1)/1000,1:6000/1000),y=c(28+sqrt(6^2-c(-6000:(-1)/1000,1:6000/1000)^2))),aes(x=x,y=y),linetype='dashed')+
+geom_path(data=data.frame(x=c(-6000:(-1)/1000,1:6000/1000),y=-c(28+sqrt(6^2-c(-6000:(-1)/1000,1:6000/1000)^2))),aes(x=x,y=y),linetype='dashed')+
+   ###key:
+geom_path(data=data.frame(x=c(-8,-8,8,8,-8),y=c(47,28,28,47,47)))+
+geom_path(data=data.frame(x=-c(-8,-8,8,8,-8),y=-c(47,28,28,47,47)))+
+   ###box inside the key:
+geom_path(data=data.frame(x=c(-6,-6,6,6,-6),y=c(47,28,28,47,47)))+
+geom_path(data=data.frame(x=c(-6,-6,6,6,-6),y=-c(47,28,28,47,47)))+
+   ###restricted area semicircle:
+geom_path(data=data.frame(x=c(-4000:(-1)/1000,1:4000/1000),y=c(41.25-sqrt(4^2-c(-4000:(-1)/1000,1:4000/1000)^2))),aes(x=x,y=y))+
+geom_path(data=data.frame(x=c(-4000:(-1)/1000,1:4000/1000),y=-c(41.25-sqrt(4^2-c(-4000:(-1)/1000,1:4000/1000)^2))),aes(x=x,y=y))+
+   ###rim:
+geom_path(data=data.frame(x=c(-750:(-1)/1000,1:750/1000,750:1/1000,-1:-750/1000),y=c(c(41.75+sqrt(0.75^2-c(-750:(-1)/1000,1:750/1000)^2)),c(41.75-sqrt(0.75^2-c(750:1/1000,-1:-750/1000)^2)))),aes(x=x,y=y))+
+geom_path(data=data.frame(x=c(-750:(-1)/1000,1:750/1000,750:1/1000,-1:-750/1000),y=-c(c(41.75+sqrt(0.75^2-c(-750:(-1)/1000,1:750/1000)^2)),c(41.75-sqrt(0.75^2-c(750:1/1000,-1:-750/1000)^2)))),aes(x=x,y=y))+
+   ###backboard:
+geom_path(data=data.frame(x=c(-3,3),y=c(43,43)),lineend='butt')+
+geom_path(data=data.frame(x=c(-3,3),y=-c(43,43)),lineend='butt')+
+   ###three-point line:
+geom_path(data=data.frame(x=c(-22,-22,-22000:(-1)/1000,1:22000/1000,22,22),y=c(47,47-169/12,41.75-sqrt(23.75^2-c(-22000:(-1)/1000,1:22000/1000)^2),47-169/12,47)),aes(x=x,y=y))+
+geom_path(data=data.frame(x=c(-22,-22,-22000:(-1)/1000,1:22000/1000,22,22),y=-c(47,47-169/12,41.75-sqrt(23.75^2-c(-22000:(-1)/1000,1:22000/1000)^2),47-169/12,47)),aes(x=x,y=y))+
+   ###fix aspect ratio to 1:1
+coord_fixed()
+#-----------------------------github code ends here --------------------------------------
+
+# I am picking these two colors for the Bucks because beige is too light for this level of opacity on my graph
+bucks_colors <- c('darkgreen','steelblue2')
+
+# 2018 plot with court background (I will use this later to make a point about shots made vs shots missed)
+plot_2018 <- court_code  + geom_point(data = bucks_2018_shots, alpha = 0.3,aes(x = locationX/10, y = locationY/10-42, color = typeEvent))  + scale_color_manual(values = bucks_colors) + labs(title = "Figure 2: Milwaukee Bucks Shot Locations (2018)", x = "X-Axis Location", y = "Y-Axis Location", color = "Shot Output") +scale_x_continuous(limits = c(-25,25)) + scale_y_continuous(limits = c(-50, 50))+theme_minimal() + facet_wrap(~typeEvent)
+
+#Now we will facet wrap to get graphs for years 2011-2020
+# and we will add the court_code that came from the link cited above with the code
+court_code + geom_point(data = bucks_total_shots, alpha = 0.3, aes(x = locationX/10, y = locationY/10-42, color = typeEvent)) + scale_color_manual(values = bucks_colors) + labs(title = "Figure 1: Milwaukee Bucks Shot Locations (2011-2020)", x = "X-Axis Location", y = "Y-Axis Location", color = "Shot Output") + facet_wrap(~yearSeason, ncol = 5) + theme_minimal()
+```
+
+Report:
+
+- The coordinates of the graph are in feet, the y axis of the court spans from -47 to 47 feet and the x axis of the court spans from -25 to 25 feet. 
+
+- The graphs are labeled by year, for reference 2011 is the season 2010-2011.
+
+- The opacity of the points is set low so that we can see when there is a higher concentration of "missed shots" versus "made shots."
+
+- The best years from these ten years, in terms of shots made, based on the shot charts, include 2011, 2015, and 2018.
+
+- Note that from 2011 to 2015, the "risky" shots (outliers) start to slim down and the distance from the net gets shorter on average. Then in 2016 the Bucks started to take those risky shots again, more often. This continues for years 2016-2020.
+
+- The number of shots starts to dwindle in years 2019 and 2020. 
+
+
+\newpage
+More information (for those interested):
+
+- The coordinates of the court match those of a standard NBA court, 94 ft x 50 ft. The very center of the court is located at (x,y) = (0,0), and this is the spot where tip off happens at the beginning of each half in the games. 
+
+- The opacity helps the viewer determine the concentration of points, in this case green versus blue. When we can see a higher concentration of blue in an area, that can tell us a few things. One thing would be that the area the shot was taken in, may be a difficult area to make a shot. Another thing that this could tell us is this is a popular place to take shots, so the team should probably work on their shots from this area into the net.
+
+- The best years 2011, 2015, and 2018 were chosen because of their opacity and how the concentrations looked. For example, in the graph for 2012, there are a lot more blue appearances than green. If there were more green, it would have more of a evergreen darkness, but since the green is quite light, we can see that there are less shots made than shots missed. Even though 2011, 2015, and 2018 seem to be better years in terms of shots made, included is an extra graph below (Figure 2) to show that this doesn't mean there were only more shots made than missed. It simply means that it could be considered a better year for the Bucks, shooting wise. This also makes sense, because in reality if in one season a team made way more shots than they missed, something would be off. Meaning that they either are not taking enough chances or they are the best team in the world and make almost every shot the take.
+
+```{r, echo = FALSE, fig.height=5, fig.width=5, warning = FALSE}
+plot_2018
+```
+
+- Note that the outliers on the graphs represent shots taken past the half court line or just outside of the 3 point line. Above, it is noted that on the 2011-2015 graphs, it can be seen that there was a decrease in outliers. These far away shots, or "risky" shots, could be due to a couple of reasons:
+  - the time clock could have been close to 0 minutes
+  - the player thought they could make it 
+  - it gets the crowd going and is exciting if you make it.
+  
+Then there appears to be more outliers starting up again in 2016 and they stay around in the graphs through 2020. 
+
+- One final thing to note, is in 2019 and 2020 the number of shots seem to dwindle on the graphs. In 2020, this could be due to the pandemic and the loss of game time in the spring. Another reason this could be for both 2019 and 2020 is that there is just a higher concentration in certain areas, and the shots are not as spread out as the previous years were so it looks different to the human eye.
+
+Overall, it can be seen that Bucks improved from 2011 to 2015 (based on shots made versus shots missed), but then from 2016-2020 they neither improved nor got worse. 
+
+Since there are quite a few seasons that have shots from past half court or between half court and the three point line, we can look into those shots and see why there may be so many. 
+ 
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.height = 4, fig.width = 9}
+# This is data combined from 2011-2015 Bucks shots 
+bucks_2011_to_2015 <- rbind(bucks_2011_shots, bucks_2012_shots, bucks_2013_shots, bucks_2014_shots, bucks_2015_shots)
+
+# graph of 2011-2015 to show the seconds remaining for the shots as a gradient
+court_code + geom_point(data = bucks_2011_to_2015, aes(x = locationX/10, y = locationY/10-42, color = secondsRemaining)) + scale_color_gradient(low = "limegreen", high = "darkgreen") + facet_wrap(~yearSeason, ncol = 5) + labs(title = "Figure 3: Bucks Shot Charts (2011-2015)", x = "X Axis Location", y = "Y Axis Location", color = "Seconds Remaining")
+```
+
+From Figure 3, it can be seen that a majority of long shots were made when the remaining seconds were less than 10. However, there are a few long shots that are made when the buzzer has more than 50 seconds left. These could have been ego shots or shots in an attempt to get the crowd* excited if they are successful. Another possibility, is that these shots could be to waste time, but one of the most popular ways to waster time is to just dribble and pass around among your team. For one step further, look at Figure 4.
+
+```{r, echo = FALSE, message = FALSE}
+# graph of just the 2014 shots but the color shows seconds remaining and the two graphs are representing missed shot vs made shots
+court_code + geom_point(data = bucks_2014_shots, aes(x = locationX/10, y = locationY/10-42,color = secondsRemaining)) + scale_color_gradient(low = "limegreen", high = "darkgreen") + facet_wrap(~yearSeason, ncol = 5) + labs(title = "Figure 4: Bucks Shot Charts 2014", x = "X Axis Location", y = "Y Axis Location", color = "Seconds Remaining") + facet_wrap(~typeEvent)
+```
+
+The year 2014 is a good year to look at for this because you can see there are clear long shots, so we an analyze why those shots may have been taken and if they were helpful. From Figure 4, you can see that those long shots were all misses and were not helpful to the team overall. Even though they may have some benefits, they are not worth it in the long run. 
